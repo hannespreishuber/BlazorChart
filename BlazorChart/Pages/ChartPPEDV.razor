@@ -1,0 +1,44 @@
+﻿@using System.Globalization
+<svg width="200px" height="auto"
+     viewBox="0 0 200 200">
+    <g style="cursor: pointer;">
+        @foreach (var item in Daten)
+        {
+            <path d="@ArcSegment(item.Key,item.Value)" fill="none" 
+              stroke="#446688" stroke-width="20"
+              @onclick="()=>OnClick.InvokeAsync(item.Key)" @onmouseover="()=>OnHoover.InvokeAsync(item.Key)">
+            </path>
+        }
+    </g>
+</svg>
+@code {
+    [Parameter]
+    public Dictionary<int, Double> Daten { get; set; }
+    [Parameter]
+   public EventCallback<int> OnClick { get; set; }
+    [Parameter]
+    public EventCallback<int> OnHoover { get; set; }
+    Double GradWert;
+    Double LastGrad = 0;
+    string ArcSegment(int segement, double Wert)
+    {
+        var winkel = Wert * (GradWert);
+        var ret = ArcSegment2(100, 100, 64, LastGrad,LastGrad+winkel-1 );
+        LastGrad += winkel;
+        return ret;
+    }
+    string ArcSegment2(double x, double y, double radius, double startWinkel, double endWinkel)
+    {
+        var startx = x + (radius * Math.Cos((endWinkel - 90) * Math.PI / 180.0));
+        var starty = y + (radius * Math.Sin((endWinkel - 90) * Math.PI / 180.0));
+        var endx = x + (radius * Math.Cos((startWinkel - 90) * Math.PI / 180.0));
+        var endy = y + (radius * Math.Sin((startWinkel - 90) * Math.PI / 180.0));
+        string d = $@"M {startx.ToString("0.00", CultureInfo.InvariantCulture)} {starty.ToString("0.00", CultureInfo.InvariantCulture)} A {radius.ToString("0.00", CultureInfo.InvariantCulture)} {radius.ToString("0.00", CultureInfo.InvariantCulture)} 0 {(endWinkel - startWinkel > 180 ? 1 : 0)} 0 {endx.ToString("0.00", CultureInfo.InvariantCulture)} {endy.ToString("0.00", CultureInfo.InvariantCulture)}";
+        // M 124.20249303011667 40.75272722624986 A 64 64 0 0 0 100 36
+        return d;
+    }
+    protected override void OnInitialized()
+    {
+        GradWert = 360/Daten.Sum(x => x.Value) ;
+    }
+}

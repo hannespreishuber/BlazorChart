@@ -1,0 +1,34 @@
+﻿@page "/"
+<div class="row">
+    <div class="col-3">
+        <ChartPPEDV Daten="Daten" OnClick="Click" OnHoover="Hoover"></ChartPPEDV></div>
+    <div class="col-2">
+        <div class="card shadow">
+            @Ausgabe
+        </div>
+    </div>
+    <div class="col-auto">
+    </div>
+</div>
+@code
+{
+    public Dictionary<int, Double> Daten { get; set; }
+    string Ausgabe;
+    void Click(int id)
+    {
+        Ausgabe = $"Clicked: {id}";
+    }
+    void Hoover(int id)
+    {
+        Ausgabe = $"Hoovered: {id}";
+    }
+    protected override void OnInitialized()
+    {
+        Daten = new Dictionary<int, Double>();
+        Daten.Add(1, 40);
+        Daten.Add(2, 100);
+        Daten.Add(3, 50);
+        Daten.Add(4, 30);
+        Daten.Add(5, 90);
+    }
+}
